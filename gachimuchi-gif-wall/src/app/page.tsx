@@ -4,18 +4,20 @@ import React, { useEffect } from 'react';
 import { GIFGrid } from '../components/GIFGrid';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { useTenorAPI } from '../hooks/useTenorAPI';
-import { validateTenorConfig } from '../utils/env';
 import { GIF } from '../types';
 
 export default function Home() {
   const [configError, setConfigError] = React.useState<string | null>(null);
   const [apiKey, setApiKey] = React.useState<string>('');
 
-  // Initialize config
+  // Initialize config - use direct access to environment variables
   React.useEffect(() => {
     try {
-      const validatedConfig = validateTenorConfig();
-      setApiKey(validatedConfig.apiKey);
+      const envApiKey = process.env.NEXT_PUBLIC_TENOR_API_KEY;
+      if (!envApiKey || envApiKey === 'your_tenor_api_key_here') {
+        throw new Error('NEXT_PUBLIC_TENOR_API_KEY must be set to a valid Tenor API key');
+      }
+      setApiKey(envApiKey);
       setConfigError(null);
     } catch (error) {
       setConfigError(error instanceof Error ? error.message : 'Configuration error');
