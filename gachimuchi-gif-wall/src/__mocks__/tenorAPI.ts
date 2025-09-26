@@ -7,8 +7,8 @@ import { TenorResponse, GIF } from '../types';
 export const mockGIF: GIF = {
   id: 'mock-gif-1',
   title: 'Mock GIF',
-  url: 'https://example.com/mock.gif',
-  preview: 'https://example.com/mock-preview.gif',
+  url: 'https://media.tenor.com/images/1234567890abcdef/mock.gif',
+  preview: 'https://media.tenor.com/images/1234567890abcdef/mock-preview.gif',
   dimensions: {
     width: 480,
     height: 270
@@ -21,8 +21,8 @@ export const mockGIFs: GIF[] = [
   {
     id: 'mock-gif-2',
     title: 'Another Mock GIF',
-    url: 'https://example.com/mock2.gif',
-    preview: 'https://example.com/mock2-preview.gif',
+    url: 'https://media.tenor.com/images/2345678901bcdefg/mock2.gif',
+    preview: 'https://media.tenor.com/images/2345678901bcdefg/mock2-preview.gif',
     dimensions: {
       width: 320,
       height: 240
@@ -32,8 +32,8 @@ export const mockGIFs: GIF[] = [
   {
     id: 'mock-gif-3',
     title: 'Third Mock GIF',
-    url: 'https://example.com/mock3.gif',
-    preview: 'https://example.com/mock3-preview.gif',
+    url: 'https://media.tenor.com/images/3456789012cdefgh/mock3.gif',
+    preview: 'https://media.tenor.com/images/3456789012cdefgh/mock3-preview.gif',
     dimensions: {
       width: 640,
       height: 480
@@ -50,11 +50,11 @@ export const mockTenorAPIData = {
       content_description: 'Mock GIF',
       media: [{
         gif: {
-          url: 'https://example.com/mock.gif',
+          url: 'https://media.tenor.com/images/1234567890abcdef/mock.gif',
           dims: [480, 270]
         },
         tinygif: {
-          url: 'https://example.com/mock-preview.gif'
+          url: 'https://media.tenor.com/images/1234567890abcdef/mock-preview.gif'
         }
       }],
       created: '2025-01-12T10:00:00Z'
@@ -64,11 +64,11 @@ export const mockTenorAPIData = {
       content_description: 'Another Mock GIF',
       media: [{
         gif: {
-          url: 'https://example.com/mock2.gif',
+          url: 'https://media.tenor.com/images/2345678901bcdefg/mock2.gif',
           dims: [320, 240]
         },
         tinygif: {
-          url: 'https://example.com/mock2-preview.gif'
+          url: 'https://media.tenor.com/images/2345678901bcdefg/mock2-preview.gif'
         }
       }],
       created: '2025-01-12T11:00:00Z'
@@ -78,11 +78,11 @@ export const mockTenorAPIData = {
       content_description: 'Third Mock GIF',
       media: [{
         gif: {
-          url: 'https://example.com/mock3.gif',
+          url: 'https://media.tenor.com/images/3456789012cdefgh/mock3.gif',
           dims: [640, 480]
         },
         tinygif: {
-          url: 'https://example.com/mock3-preview.gif'
+          url: 'https://media.tenor.com/images/3456789012cdefgh/mock3-preview.gif'
         }
       }],
       created: '2025-01-12T12:00:00Z'

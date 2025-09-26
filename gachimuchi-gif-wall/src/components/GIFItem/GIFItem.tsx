@@ -25,6 +25,7 @@ export const GIFItem: React.FC<GIFItemProps> = ({ gif, onClick }) => {
       tabIndex={0}
       role="button"
       aria-label={`View GIF: ${gif.title}`}
+      data-testid="gif-item"
     >
       <Image
         src={gif.preview}

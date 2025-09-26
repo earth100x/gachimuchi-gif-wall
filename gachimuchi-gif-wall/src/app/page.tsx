@@ -33,7 +33,7 @@ export default function Home() {
     if (apiKey && searchGifs) {
       searchGifs('gachimuchi');
     }
-  }, [apiKey, searchGifs]);
+  }, [apiKey]); // Remove searchGifs from dependencies to prevent re-triggering
 
   const handleGifClick = (gif: GIF) => {
     // Future modal functionality
