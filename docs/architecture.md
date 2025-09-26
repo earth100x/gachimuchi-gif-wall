@@ -612,6 +612,8 @@ gachimuchi-gif-wall/
 ├── .gitignore                  # Git ignore rules
 ├── next.config.js              # Next.js configuration
 ├── package.json                # Dependencies
+├── pnpm-lock.yaml              # pnpm lock file
+├── pnpm-workspace.yaml         # pnpm workspace config
 ├── tailwind.config.js          # Tailwind CSS config
 ├── tsconfig.json               # TypeScript config
 └── README.md                   # Project documentation
@@ -627,8 +629,8 @@ gachimuchi-gif-wall/
 # Node.js 18+ required
 node --version
 
-# npm or yarn package manager
-npm --version
+# pnpm package manager
+pnpm --version
 ```
 
 #### Initial Setup
@@ -639,7 +641,7 @@ git clone <repository-url>
 cd gachimuchi-gif-wall
 
 # Install dependencies
-npm install
+pnpm install
 
 # Copy environment file
 cp .env.example .env.local
@@ -652,22 +654,22 @@ echo "NEXT_PUBLIC_TENOR_API_KEY=your_api_key_here" >> .env.local
 
 ```bash
 # Start development server
-npm run dev
+pnpm dev
 
 # Build for production
-npm run build
+pnpm build
 
 # Start production server
-npm start
+pnpm start
 
 # Run tests
-npm test
+pnpm test
 
 # Run linting
-npm run lint
+pnpm lint
 
 # Run type checking
-npm run type-check
+pnpm type-check
 ```
 
 ### Environment Configuration
@@ -690,7 +692,7 @@ NODE_ENV=development
 **Frontend Deployment:**
 
 - **Platform:** Vercel
-- **Build Command:** `npm run build`
+- **Build Command:** `pnpm build`
 - **Output Directory:** `.next`
 - **CDN/Edge:** Vercel Edge Network
 
@@ -719,11 +721,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run type-check
-      - run: npm test
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm type-check
+      - run: pnpm test
 
   deploy:
     needs: test
