@@ -14,7 +14,7 @@ mockIntersectionObserver.mockReturnValue({
   disconnect: mockDisconnect,
 });
 
-// @ts-ignore
+// @ts-expect-error - Mocking global IntersectionObserver for testing
 global.IntersectionObserver = mockIntersectionObserver;
 
 describe('useInfiniteScroll', () => {

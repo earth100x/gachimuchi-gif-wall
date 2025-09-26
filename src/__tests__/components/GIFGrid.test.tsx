@@ -94,7 +94,7 @@ describe('GIFGrid', () => {
 
   it('calls useInfiniteScroll with correct parameters', () => {
     const mockOnLoadMore = jest.fn();
-    const { useInfiniteScroll } = require('../../hooks/useInfiniteScroll');
+    const { useInfiniteScroll } = jest.requireActual('../../hooks/useInfiniteScroll');
     
     render(
       <GIFGrid 
@@ -115,7 +115,7 @@ describe('GIFGrid', () => {
   });
 
   it('disables infinite scroll when hasMore is false', () => {
-    const { useInfiniteScroll } = require('../../hooks/useInfiniteScroll');
+    const { useInfiniteScroll } = jest.requireActual('../../hooks/useInfiniteScroll');
     
     render(
       <GIFGrid 
@@ -135,7 +135,7 @@ describe('GIFGrid', () => {
   });
 
   it('disables infinite scroll when loading', () => {
-    const { useInfiniteScroll } = require('../../hooks/useInfiniteScroll');
+    const { useInfiniteScroll } = jest.requireActual('../../hooks/useInfiniteScroll');
     
     render(
       <GIFGrid 
