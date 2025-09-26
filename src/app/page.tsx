@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { GIFGrid } from '../components/GIFGrid';
 import { ErrorDisplay } from '../components/ErrorDisplay';
+import { AudioPlayer } from '../components/AudioPlayer';
 import { useTenorAPI } from '../hooks/useTenorAPI';
 import { GIF } from '../types';
 
@@ -52,6 +53,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <AudioPlayer 
+        src="/kazuya.mp3" 
+        autoPlay={true} 
+        loop={true} 
+        volume={0.3}
+      />
+      
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">

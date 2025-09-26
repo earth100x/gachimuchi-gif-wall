@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { GIF } from '../types';
 import { TenorAPIClient } from '../services/tenorAPI';
 
@@ -12,8 +12,12 @@ export const useTenorAPI = (apiKey: string) => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [nextPos, setNextPos] = useState<string | undefined>(undefined);
+  const nextPosRef = useRef<string | undefined>(undefined);
 
   const apiClient = useMemo(() => new TenorAPIClient(apiKey), [apiKey]);
+
+  // Keep ref in sync with state
+  nextPosRef.current = nextPos;
 
   /**
    * Search for GIFs with the given query
@@ -35,7 +39,9 @@ export const useTenorAPI = (apiKey: string) => {
     setError(null);
 
     try {
-      const response = await apiClient.searchGifs(query, limit, append ? nextPos : undefined);
+      // Use ref to get current nextPos value for pagination
+      const currentNextPos = append ? nextPosRef.current : undefined;
+      const response = await apiClient.searchGifs(query, limit, currentNextPos);
       
       if (response.error) {
         setError(response.error);
@@ -57,7 +63,7 @@ export const useTenorAPI = (apiKey: string) => {
     } finally {
       setLoading(false);
     }
-  }, [apiClient, nextPos]);
+  }, [apiClient]);
 
   /**
    * Load more GIFs (pagination) - for infinite scroll
@@ -84,15 +90,15 @@ export const useTenorAPI = (apiKey: string) => {
   }, [loadMoreGifs]);
 
   /**
-   * Get trending GIFs
+   * Get featured GIFs
    * @param limit - Maximum number of results (default: 8)
    */
-  const getTrending = useCallback(async (limit: number = 8) => {
+  const getFeatured = useCallback(async (limit: number = 8) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await apiClient.getTrending(limit);
+      const response = await apiClient.getFeatured(limit);
       
       if (response.error) {
         setError(response.error);
@@ -105,7 +111,7 @@ export const useTenorAPI = (apiKey: string) => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
       setError(errorMessage);
-      console.error('Get Trending Error:', err);
+      console.error('Get Featured Error:', err);
     } finally {
       setLoading(false);
     }
@@ -140,7 +146,7 @@ export const useTenorAPI = (apiKey: string) => {
     searchGifs,
     loadMore,
     loadMoreGifs,
-    getTrending,
+    getFeatured,
     clearGifs,
     retry
   };
