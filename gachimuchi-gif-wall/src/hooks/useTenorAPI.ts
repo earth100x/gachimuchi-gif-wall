@@ -65,8 +65,12 @@ export const useTenorAPI = (apiKey: string) => {
    * @param limit - Maximum number of results (default: 8)
    */
   const loadMoreGifs = useCallback(async (query: string, limit: number = 8) => {
-    if (!hasMore || loading) return;
+    if (!hasMore || loading) {
+      console.log('Load more blocked:', { hasMore, loading });
+      return;
+    }
     
+    console.log('Loading more GIFs...');
     await searchGifs(query, limit, true);
   }, [hasMore, loading, searchGifs]);
 

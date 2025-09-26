@@ -27,27 +27,55 @@ export const useInfiniteScroll = (
     threshold = 0.1,
     rootMargin = '0px 0px 100px 0px',
     enabled = true,
-    delayInMs = 100
+    delayInMs = 200
   } = options;
 
   const targetRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const isIntersectingRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isProcessingRef = useRef(false);
+  const callbackRef = useRef(callback);
+
+  // Update callback ref when callback changes
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
   const loadMore = useCallback(() => {
+    // Prevent multiple simultaneous calls
+    if (isProcessingRef.current) {
+      console.log('Load more blocked: already processing');
+      return;
+    }
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
     timeoutRef.current = setTimeout(() => {
-      callback();
+      isProcessingRef.current = true;
+      console.log('Loading more...');
+      try {
+        callbackRef.current();
+      } finally {
+        // Reset processing flag after a short delay to prevent rapid successive calls
+        setTimeout(() => {
+          isProcessingRef.current = false;
+          console.log('Processing complete, ready for next call');
+        }, 500);
+      }
     }, delayInMs);
-  }, [callback, delayInMs]);
+  }, [delayInMs]);
 
   useEffect(() => {
     if (!enabled || !targetRef.current) {
       return;
+    }
+
+    // Clean up existing observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
     }
 
     // Create intersection observer
@@ -56,7 +84,14 @@ export const useInfiniteScroll = (
         const [entry] = entries;
         isIntersectingRef.current = entry.isIntersecting;
 
-        if (entry.isIntersecting) {
+        console.log('Intersection observer triggered:', {
+          isIntersecting: entry.isIntersecting,
+          isProcessing: isProcessingRef.current,
+          intersectionRatio: entry.intersectionRatio
+        });
+
+        if (entry.isIntersecting && !isProcessingRef.current) {
+          console.log('Triggering load more...');
           loadMore();
         }
       },

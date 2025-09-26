@@ -24,6 +24,7 @@ export const GIFGrid: React.FC<GIFGridProps> = ({
     {
       enabled: hasMore && !loading,
       rootMargin: '0px 0px 200px 0px',
+      delayInMs: 200, // Increased delay to prevent rapid calls
     }
   );
 
