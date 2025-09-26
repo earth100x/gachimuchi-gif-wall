@@ -42,13 +42,13 @@ export const mockGIFs: GIF[] = [
   }
 ];
 
-// Mock Tenor API response structure
+// Mock Tenor API v2 response structure
 export const mockTenorAPIData = {
   results: [
     {
       id: 'mock-gif-1',
       content_description: 'Mock GIF',
-      media: [{
+      media_formats: {
         gif: {
           url: 'https://media.tenor.com/images/1234567890abcdef/mock.gif',
           dims: [480, 270]
@@ -56,13 +56,13 @@ export const mockTenorAPIData = {
         tinygif: {
           url: 'https://media.tenor.com/images/1234567890abcdef/mock-preview.gif'
         }
-      }],
+      },
       created: '2025-01-12T10:00:00Z'
     },
     {
       id: 'mock-gif-2',
       content_description: 'Another Mock GIF',
-      media: [{
+      media_formats: {
         gif: {
           url: 'https://media.tenor.com/images/2345678901bcdefg/mock2.gif',
           dims: [320, 240]
@@ -70,13 +70,13 @@ export const mockTenorAPIData = {
         tinygif: {
           url: 'https://media.tenor.com/images/2345678901bcdefg/mock2-preview.gif'
         }
-      }],
+      },
       created: '2025-01-12T11:00:00Z'
     },
     {
       id: 'mock-gif-3',
       content_description: 'Third Mock GIF',
-      media: [{
+      media_formats: {
         gif: {
           url: 'https://media.tenor.com/images/3456789012cdefgh/mock3.gif',
           dims: [640, 480]
@@ -84,7 +84,7 @@ export const mockTenorAPIData = {
         tinygif: {
           url: 'https://media.tenor.com/images/3456789012cdefgh/mock3-preview.gif'
         }
-      }],
+      },
       created: '2025-01-12T12:00:00Z'
     }
   ],

@@ -13,9 +13,11 @@ global.fetch = jest.fn();
 describe('TenorAPIClient', () => {
   let client: TenorAPIClient;
   const mockApiKey = 'test-api-key';
+  const mockClientKey = 'test-client-key';
+  const mockCountry = 'US';
 
   beforeEach(() => {
-    client = new TenorAPIClient(mockApiKey);
+    client = new TenorAPIClient(mockApiKey, mockClientKey, mockCountry);
     jest.clearAllMocks();
   });
 
@@ -31,7 +33,7 @@ describe('TenorAPIClient', () => {
       expect(result.next).toBe('next-token-123');
       expect(result.error).toBeUndefined();
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('g.tenor.com/v1/search'),
+        expect.stringContaining('tenor.googleapis.com/v2/search'),
         expect.objectContaining({
           method: 'GET',
           headers: {
@@ -92,6 +94,19 @@ describe('TenorAPIClient', () => {
       );
     });
 
+    it('should include required v2 parameters', async () => {
+      (global.fetch as jest.Mock).mockImplementation(
+        mockFetch(mockTenorAPIData)
+      );
+
+      await client.searchGifs('gachimuchi', 8);
+
+      const fetchCall = (global.fetch as jest.Mock).mock.calls[0][0];
+      expect(fetchCall).toContain('client_key=test-client-key');
+      expect(fetchCall).toContain('country=US');
+      expect(fetchCall).toContain('key=test-api-key');
+    });
+
     it('should use default limit when not provided', async () => {
       (global.fetch as jest.Mock).mockImplementation(
         mockFetch(mockTenorAPIData)
@@ -106,18 +121,18 @@ describe('TenorAPIClient', () => {
     });
   });
 
-  describe('getTrending', () => {
-    it('should get trending GIFs successfully', async () => {
+  describe('getFeatured', () => {
+    it('should get featured GIFs successfully (replaces trending in v2)', async () => {
       (global.fetch as jest.Mock).mockImplementation(
         mockFetch(mockTenorAPIData)
       );
 
-      const result = await client.getTrending(8);
+      const result = await client.getFeatured(8);
 
       expect(result.results).toHaveLength(3);
       expect(result.next).toBe('next-token-123');
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('g.tenor.com/v1/trending'),
+        expect.stringContaining('tenor.googleapis.com/v2/featured'),
         expect.objectContaining({
           method: 'GET',
           headers: {
@@ -127,12 +142,25 @@ describe('TenorAPIClient', () => {
       );
     });
 
-    it('should handle trending API errors', async () => {
+    it('should include required v2 parameters for featured endpoint', async () => {
+      (global.fetch as jest.Mock).mockImplementation(
+        mockFetch(mockTenorAPIData)
+      );
+
+      await client.getFeatured(8);
+
+      const fetchCall = (global.fetch as jest.Mock).mock.calls[0][0];
+      expect(fetchCall).toContain('client_key=test-client-key');
+      expect(fetchCall).toContain('country=US');
+      expect(fetchCall).toContain('key=test-api-key');
+    });
+
+    it('should handle featured API errors', async () => {
       (global.fetch as jest.Mock).mockImplementation(
         mockFetch({}, false, 404)
       );
 
-      await expect(client.getTrending(8))
+      await expect(client.getFeatured(8))
         .rejects.toThrow('HTTP error! status: 404');
     });
   });

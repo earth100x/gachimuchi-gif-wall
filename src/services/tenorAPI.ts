@@ -5,11 +5,15 @@ import { TenorResponse } from '../types';
  * Handles communication with the Tenor API for fetching GIFs
  */
 export class TenorAPIClient {
-  private baseURL = 'https://g.tenor.com/v1';
+  private baseURL = 'https://tenor.googleapis.com/v2';
   private apiKey: string;
+  private clientKey: string;
+  private country: string;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, clientKey: string = 'kazuya-demo', country: string = 'US') {
     this.apiKey = apiKey;
+    this.clientKey = clientKey;
+    this.country = country;
   }
 
   /**
@@ -28,6 +32,8 @@ export class TenorAPIClient {
       const params = new URLSearchParams({
         q: query,
         key: this.apiKey,
+        client_key: this.clientKey,
+        country: this.country,
         limit: limit.toString(),
         media_filter: 'gif',
         contentfilter: 'high'
@@ -50,26 +56,26 @@ export class TenorAPIClient {
 
       const data = await response.json();
       
-      // Transform Tenor API response to our interface
+      // Transform Tenor API v2 response to our interface
       return {
         results: data.results?.map((item: unknown) => {
           const typedItem = item as {
             id: string;
             content_description?: string;
-            media?: Array<{
+            media_formats?: {
               gif?: { url?: string; dims?: number[] };
               tinygif?: { url?: string };
-            }>;
+            };
             created?: string;
           };
           return {
             id: typedItem.id,
             title: typedItem.content_description || 'Untitled GIF',
-            url: typedItem.media?.[0]?.gif?.url || '',
-            preview: typedItem.media?.[0]?.tinygif?.url || typedItem.media?.[0]?.gif?.url || '',
+            url: typedItem.media_formats?.gif?.url || '',
+            preview: typedItem.media_formats?.tinygif?.url || typedItem.media_formats?.gif?.url || '',
             dimensions: {
-              width: typedItem.media?.[0]?.gif?.dims?.[0] || 0,
-              height: typedItem.media?.[0]?.gif?.dims?.[1] || 0,
+              width: typedItem.media_formats?.gif?.dims?.[0] || 0,
+              height: typedItem.media_formats?.gif?.dims?.[1] || 0,
             },
             created: typedItem.created || new Date().toISOString(),
           };
@@ -96,20 +102,22 @@ export class TenorAPIClient {
   }
 
   /**
-   * Get trending GIFs
+   * Get featured GIFs (replaces trending in v2)
    * @param limit - Maximum number of results (default: 8)
    * @returns Promise<TenorResponse>
    */
-  async getTrending(limit: number = 8): Promise<TenorResponse> {
+  async getFeatured(limit: number = 8): Promise<TenorResponse> {
     try {
       const params = new URLSearchParams({
         key: this.apiKey,
+        client_key: this.clientKey,
+        country: this.country,
         limit: limit.toString(),
         media_filter: 'gif',
         contentfilter: 'high'
       });
 
-      const response = await fetch(`${this.baseURL}/trending?${params}`, {
+      const response = await fetch(`${this.baseURL}/featured?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -127,20 +135,20 @@ export class TenorAPIClient {
           const typedItem = item as {
             id: string;
             content_description?: string;
-            media?: Array<{
+            media_formats?: {
               gif?: { url?: string; dims?: number[] };
               tinygif?: { url?: string };
-            }>;
+            };
             created?: string;
           };
           return {
             id: typedItem.id,
             title: typedItem.content_description || 'Untitled GIF',
-            url: typedItem.media?.[0]?.gif?.url || '',
-            preview: typedItem.media?.[0]?.tinygif?.url || typedItem.media?.[0]?.gif?.url || '',
+            url: typedItem.media_formats?.gif?.url || '',
+            preview: typedItem.media_formats?.tinygif?.url || typedItem.media_formats?.gif?.url || '',
             dimensions: {
-              width: typedItem.media?.[0]?.gif?.dims?.[0] || 0,
-              height: typedItem.media?.[0]?.gif?.dims?.[1] || 0,
+              width: typedItem.media_formats?.gif?.dims?.[0] || 0,
+              height: typedItem.media_formats?.gif?.dims?.[1] || 0,
             },
             created: typedItem.created || new Date().toISOString(),
           };
@@ -158,8 +166,14 @@ export class TenorAPIClient {
 /**
  * Create a new Tenor API client instance
  * @param apiKey - Tenor API key
+ * @param clientKey - Client key for integration identification
+ * @param country - Country code (default: US)
  * @returns TenorAPIClient instance
  */
-export const createTenorAPIClient = (apiKey: string): TenorAPIClient => {
-  return new TenorAPIClient(apiKey);
+export const createTenorAPIClient = (
+  apiKey: string, 
+  clientKey: string = 'kazuya-demo', 
+  country: string = 'US'
+): TenorAPIClient => {
+  return new TenorAPIClient(apiKey, clientKey, country);
 };
