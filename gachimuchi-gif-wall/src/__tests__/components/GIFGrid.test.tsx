@@ -3,6 +3,15 @@ import { render, screen } from '@testing-library/react';
 import { GIFGrid } from '../../components/GIFGrid';
 import { GIF } from '../../types';
 
+// Mock the useInfiniteScroll hook
+jest.mock('../../hooks/useInfiniteScroll', () => ({
+  useInfiniteScroll: jest.fn(() => ({
+    targetRef: { current: null },
+    isIntersecting: false,
+    loadMore: jest.fn(),
+  })),
+}));
+
 const mockGIFs: GIF[] = [
   {
     id: 'test-gif-1',
@@ -63,5 +72,85 @@ describe('GIFGrid', () => {
     render(<GIFGrid gifs={mockGIFs} loading={false} />);
     
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('shows infinite scroll trigger when hasMore is true and not loading', () => {
+    render(<GIFGrid gifs={mockGIFs} hasMore={true} loading={false} />);
+    
+    expect(screen.getByTestId('infinite-scroll-trigger')).toBeInTheDocument();
+  });
+
+  it('does not show infinite scroll trigger when hasMore is false', () => {
+    render(<GIFGrid gifs={mockGIFs} hasMore={false} loading={false} />);
+    
+    expect(screen.queryByTestId('infinite-scroll-trigger')).not.toBeInTheDocument();
+  });
+
+  it('does not show infinite scroll trigger when loading', () => {
+    render(<GIFGrid gifs={mockGIFs} hasMore={true} loading={true} />);
+    
+    expect(screen.queryByTestId('infinite-scroll-trigger')).not.toBeInTheDocument();
+  });
+
+  it('calls useInfiniteScroll with correct parameters', () => {
+    const mockOnLoadMore = jest.fn();
+    const { useInfiniteScroll } = require('../../hooks/useInfiniteScroll');
+    
+    render(
+      <GIFGrid 
+        gifs={mockGIFs} 
+        hasMore={true} 
+        loading={false} 
+        onLoadMore={mockOnLoadMore} 
+      />
+    );
+    
+    expect(useInfiniteScroll).toHaveBeenCalledWith(
+      mockOnLoadMore,
+      {
+        enabled: true,
+        rootMargin: '0px 0px 200px 0px',
+      }
+    );
+  });
+
+  it('disables infinite scroll when hasMore is false', () => {
+    const { useInfiniteScroll } = require('../../hooks/useInfiniteScroll');
+    
+    render(
+      <GIFGrid 
+        gifs={mockGIFs} 
+        hasMore={false} 
+        loading={false} 
+      />
+    );
+    
+    expect(useInfiniteScroll).toHaveBeenCalledWith(
+      expect.any(Function),
+      {
+        enabled: false,
+        rootMargin: '0px 0px 200px 0px',
+      }
+    );
+  });
+
+  it('disables infinite scroll when loading', () => {
+    const { useInfiniteScroll } = require('../../hooks/useInfiniteScroll');
+    
+    render(
+      <GIFGrid 
+        gifs={mockGIFs} 
+        hasMore={true} 
+        loading={true} 
+      />
+    );
+    
+    expect(useInfiniteScroll).toHaveBeenCalledWith(
+      expect.any(Function),
+      {
+        enabled: false,
+        rootMargin: '0px 0px 200px 0px',
+      }
+    );
   });
 });

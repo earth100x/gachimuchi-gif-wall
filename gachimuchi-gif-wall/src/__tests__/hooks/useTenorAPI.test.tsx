@@ -211,4 +211,52 @@ describe('useTenorAPI', () => {
     // Should only call searchGifs once
     expect(mockSearchGifs).toHaveBeenCalledTimes(1);
   });
+
+  it('should provide loadMoreGifs method for infinite scroll', async () => {
+    const firstResponse = { ...mockTenorResponse, next: 'next-token' };
+    const secondResponse = { ...mockTenorResponse, results: mockTenorResponse.results.slice(0, 1) };
+    
+    mockSearchGifs
+      .mockResolvedValueOnce(firstResponse)
+      .mockResolvedValueOnce(secondResponse);
+
+    const { result } = renderHook(() => useTenorAPI(mockApiKey));
+
+    // First search
+    await act(async () => {
+      await result.current.searchGifs('gachimuchi', 8);
+    });
+
+    expect(result.current.gifs).toHaveLength(3);
+    expect(result.current.hasMore).toBe(true);
+
+    // Load more using loadMoreGifs
+    await act(async () => {
+      await result.current.loadMoreGifs('gachimuchi', 8);
+    });
+
+    expect(result.current.gifs).toHaveLength(4); // 3 + 1
+    expect(mockSearchGifs).toHaveBeenCalledTimes(2);
+    expect(mockSearchGifs).toHaveBeenLastCalledWith('gachimuchi', 8, 'next-token');
+  });
+
+  it('should have loadMore and loadMoreGifs as equivalent methods', async () => {
+    const firstResponse = { ...mockTenorResponse, next: 'next-token' };
+    const secondResponse = { ...mockTenorResponse, results: mockTenorResponse.results.slice(0, 1) };
+    
+    mockSearchGifs
+      .mockResolvedValueOnce(firstResponse)
+      .mockResolvedValueOnce(secondResponse);
+
+    const { result } = renderHook(() => useTenorAPI(mockApiKey));
+
+    // First search
+    await act(async () => {
+      await result.current.searchGifs('gachimuchi', 8);
+    });
+
+    // Both methods should behave the same
+    expect(typeof result.current.loadMore).toBe('function');
+    expect(typeof result.current.loadMoreGifs).toBe('function');
+  });
 });

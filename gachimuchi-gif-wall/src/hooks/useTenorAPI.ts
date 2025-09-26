@@ -60,15 +60,24 @@ export const useTenorAPI = (apiKey: string) => {
   }, [apiClient, nextPos]);
 
   /**
-   * Load more GIFs (pagination)
+   * Load more GIFs (pagination) - for infinite scroll
    * @param query - Original search query
    * @param limit - Maximum number of results (default: 8)
    */
-  const loadMore = useCallback(async (query: string, limit: number = 8) => {
+  const loadMoreGifs = useCallback(async (query: string, limit: number = 8) => {
     if (!hasMore || loading) return;
     
     await searchGifs(query, limit, true);
   }, [hasMore, loading, searchGifs]);
+
+  /**
+   * Load more GIFs (pagination) - legacy method for backward compatibility
+   * @param query - Original search query
+   * @param limit - Maximum number of results (default: 8)
+   */
+  const loadMore = useCallback(async (query: string, limit: number = 8) => {
+    return loadMoreGifs(query, limit);
+  }, [loadMoreGifs]);
 
   /**
    * Get trending GIFs
@@ -126,6 +135,7 @@ export const useTenorAPI = (apiKey: string) => {
     hasMore,
     searchGifs,
     loadMore,
+    loadMoreGifs,
     getTrending,
     clearGifs,
     retry

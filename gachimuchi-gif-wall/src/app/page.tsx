@@ -25,7 +25,7 @@ export default function Home() {
   }, []);
 
   // Always call the hook, but with empty key if not available
-  const { gifs, loading, error, searchGifs, retry } = useTenorAPI(apiKey);
+  const { gifs, loading, error, hasMore, searchGifs, loadMoreGifs, retry } = useTenorAPI(apiKey);
   const finalError = configError || error;
 
   // Initial load on component mount
@@ -42,6 +42,12 @@ export default function Home() {
 
   const handleRetry = () => {
     retry('gachimuchi');
+  };
+
+  const handleLoadMore = () => {
+    if (apiKey && loadMoreGifs) {
+      loadMoreGifs('gachimuchi');
+    }
   };
 
   return (
@@ -66,7 +72,9 @@ export default function Home() {
           <GIFGrid 
             gifs={gifs}
             loading={loading}
+            hasMore={hasMore}
             onGifClick={handleGifClick}
+            onLoadMore={handleLoadMore}
           />
         )}
       </div>
